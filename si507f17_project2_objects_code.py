@@ -110,6 +110,7 @@ class Media(object):
         self.author = dict["artistName"]
         self.itunes_URL = dict["trackViewUrl"]
         self.itunes_id = dict["trackId"]
+        self.kind = dict["kind"]
 
     # string method
     def __str__(self):
@@ -245,21 +246,20 @@ song_list = []
 movie_list = []
 book_list = []
 
-# media_list
+# media_list and book_list
 for index in media_samples:
-    media_list.append(Media(index))
-
+    temp = Media(index)
+    media_list.append(temp)
+    if temp.kind == "book":
+        book_list.append(temp)
 # song_list
 for index in song_samples:
     song_list.append(Song(index))
 
 # movie_list
-print(movie_samples)
 for index in movie_samples:
-    temp = Movie(index)
-    print(temp.title)
-    print(temp.time)
-    movie_list.append(temp)
+    movie_list.append(Movie(index))
+
 
 # You should end up with: a list of Media objects saved in a variable media_list,
 # a list of Song objects saved in a variable song_list,
