@@ -103,8 +103,8 @@ print("\n***** PROBLEM 1 *****\n")
 
 
 class Media(object):
-    # Constructor
 
+    # Constructor
     def __init__(self, dict):
         self.title = dict["trackName"]
         self.author = dict["artistName"]
@@ -115,12 +115,15 @@ class Media(object):
     def __str__(self):
         return "{0} by {1}".format(self.title, self.author)
 
+    # representation method
     def __repr__(self):
         return "ITUNES MEDIA: " + str(self.itunes_id)
 
+    # length method, always return 0
     def __len__(self):
         return 0
 
+    # contains method
     def __contains__(self, string):
         return string in self.title
 
@@ -151,6 +154,22 @@ print("\n***** PROBLEM 2 *****\n")
 # How can you access that data and convert it to seconds?)
 
 
+class Song(Media):
+
+    def __init__(self, dict):
+        super().__init__(dict)
+        self.album = dict["collectionName"]
+        self.track_number = dict["trackNumber"]
+        self.genre = dict["primaryGenreName"]
+        try:
+            self.time = int(dict["trackTimeMillis"] / 1000)
+        except KeyError:
+            print("No track time available.")
+            self.time = 0
+
+    def __len__(self):
+        return self.time
+
 # class Movie:
 
 # Should have the following additional instance variables:
@@ -171,7 +190,30 @@ print("\n***** PROBLEM 2 *****\n")
 # there is no movie description, this method should return 0.
 
 
-# [PROBLEM 3] [150 POINTS]
+class Movie(Media):
+
+    def __init__(self, dict):
+        super().__init__(dict)
+        self.rating = dict["contentAdvisoryRating"]
+        self.genre = dict["primaryGenreName"]
+        self.description = dict["longDescription"].encode("utf-8")
+        if not self.description:
+            self.description = "None"
+        try:
+            self.time = int(dict["trackTimeMillis"] / 60000)
+        except KeyError:
+            print("No movie time available")
+            self.time = 0
+
+    def __len__(self):
+        return self.time
+
+    def title_words_num():
+        if self.description == "None":
+            return 0
+        return self.description.count(" ") + 1
+
+        # [PROBLEM 3] [150 POINTS]
 print("\n***** PROBLEM 3 *****\n")
 
 # In this problem, you'll write some code to use the definitions you've
@@ -198,6 +240,26 @@ movie_samples = sample_get_cache_itunes_data("love", "movie")["results"]
 # Use the values in these variables above, and the class definitions
 # you've written, in order to create a list of each media type, including
 # "media" generally.
+media_list = []
+song_list = []
+movie_list = []
+book_list = []
+
+# media_list
+for index in media_samples:
+    media_list.append(Media(index))
+
+# song_list
+for index in song_samples:
+    song_list.append(Song(index))
+
+# movie_list
+print(movie_samples)
+for index in movie_samples:
+    temp = Movie(index)
+    print(temp.title)
+    print(temp.time)
+    movie_list.append(temp)
 
 # You should end up with: a list of Media objects saved in a variable media_list,
 # a list of Song objects saved in a variable song_list,
