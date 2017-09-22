@@ -69,7 +69,6 @@ def sample_get_cache_itunes_data(search_term, media_term="all"):
     params["term"] = search_term
     unique_ident = params_unique_combination(baseurl, params)
     if unique_ident in CACHE_DICTION:
-        print(CACHE_DICTION)
         return CACHE_DICTION[unique_ident]
     else:
         CACHE_DICTION[unique_ident] = json.loads(
@@ -101,21 +100,29 @@ print("\n***** PROBLEM 1 *****\n")
 # - a special representation method, which returns "ITUNES MEDIA: <itunes id>" with the iTunes id number for the piece of media (e.g. the track) only in place of "<itunes id>"
 # - a special len method, which, for the Media class, returns 0 no matter what. (The length of an audiobook might mean something different from the length of a song, depending on how you want to define them!)
 # - a special contains method (for the in operator) which takes one additional input, as all contains methods must, which should always be a string, and checks to see if the string input to this contains method is INSIDE the string representing the title of this piece of media (the title instance variable)
-if __name__ == "__main__":
-    sample_get_cache_itunes_data("poker face")
 
 
 class Media(object):
     # Constructor
 
     def __init__(self, dict):
-        self.title = dict["results"][0]["trackName"]
-        self.author = dict["results"][0]["artistName"]
-        self.itunes_URL = dict["results"][0]["trackViewUrl"]
-        self.itunes_id = dict["results"][0]["trackId"]
+        self.title = dict["trackName"]
+        self.author = dict["artistName"]
+        self.itunes_URL = dict["trackViewUrl"]
+        self.itunes_id = dict["trackId"]
 
     # string method
     def __str__(self):
+        return "{0} by {1}".format(self.title, self.author)
+
+    def __repr__(self):
+        return "ITUNES MEDIA: " + str(self.itunes_id)
+
+    def __len__(self):
+        return 0
+
+    def __contains__(self, string):
+        return string in self.title
 
         # [PROBLEM 2] [400 POINTS]
 print("\n***** PROBLEM 2 *****\n")
