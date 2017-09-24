@@ -3,6 +3,9 @@
 import requests
 import json
 import unittest
+import csv
+import os.path
+
 
 # Instructions for each piece to be completed for this project can be
 # found in the file, below.
@@ -90,9 +93,9 @@ print("\n***** PROBLEM 1 *****\n")
 
 # The Media class should accept one dictionary data structure representing a piece of media from iTunes as input to the constructor.
 # Its constructor should invoke a method to get and cache data, and instatiate at least the following instance variables:
-## - title
-## - author
-## - itunes_URL
+# - title
+# - author
+# - itunes_URL
 # - itunes_id (e.g. the value of the track ID, whatever the track is in the data... a movie, a song, etc)
 
 # The Media class should also have the following methods:
@@ -175,7 +178,7 @@ class Song(Media):
 
 # Should have the following additional instance variables:
 # - rating (the content advisory rating, from the data)
-## - genre
+# - genre
 # - description (if none, the value of this instance variable should be None) -- NOTE that this might cause some string encoding problems for you to debug!
 # HINT: Check out the Unicode sub-section of the textbook! This is a
 # common type of Python debugging you'll encounter with real data... but
@@ -310,3 +313,41 @@ print("\n***** PROBLEM 4 *****\n")
 
 # HINT #4: Write or draw out your plan for this before you actually start
 # writing the code! That will make it much easier.
+
+# helper function to parse single object to a dictionary
+
+
+def toDict(media):
+    return {"title": media.title, "artist": media.author,
+            "id": media.itunes_id, "url": media.itunes_URL,
+            "length": len(media)}
+
+# if the csv file does not exist, create the file and fill the header
+# then write the parsed objects into the file. If the file alrady exists,
+# read the file and save all the ids to a list to avoid duplicates.
+
+
+def toCSV(filename, inputList):
+    if not os.path.isfile(filename):
+        with open(filename, "w", newline="") as f:
+            fieldnames = ["title", "artist", "id", "url", "length"]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for item in inputList:
+                writer.writerow(toDict(item))
+    else:
+        current_id_list = []
+        with open(filename) as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                current_id_list.append(str(row["id"]))
+        with open(filename, "a", newline="") as f:
+            fieldnames = ["title", "artist", "id", "url", "length"]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            for item in inputList:
+                if str(item.itunes_id) not in current_id_list:
+                    writer.writerow(toDict(item))
+
+toCSV("media.csv", media_list)
+toCSV("songs.csv", song_list)
+toCSV("movies.csv", movie_list)
